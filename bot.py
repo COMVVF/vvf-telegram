@@ -48,18 +48,71 @@ def download(url):
 
 def telegram(method, payload):
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-    if not token: raise RuntimeError('Manca TELEGRAM_BOT_TOKEN nei Secrets')
-    req = urllib.request.Request('https://api.telegram.org/bot' + token + '/' + method,
-        data=json.dumps(payload).encode(), headers={'Content-Type': 'application/json'})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as response: result = json.load(response)
-    except urllib.error.HTTPError as e:
-        # Mai stampare URL o eccezioni che contengono il token.
-        raise RuntimeError('Telegram HTTP ' + str(e.code)) from None
-    except Exception:
-        raise RuntimeError('Connessione Telegram fallita; verificare prima di riprovare') from None
-    if not result.get('ok'): raise RuntimeError('Telegram ha rifiutato la richiesta')
-    return result['result']
+    if not token:
+        raise RuntimeError('Manca TELEGRAM_BOT_TOKEN nei Secrets')
+
+    total_wait = 0
+
+    for attempt in range(4):
+        if method == 'sendMessage':
+            last = getattr(telegram, '_last_send', 0)
+            pause = 3.5 - (time.monotonic() - last)
+            if pause > 0:
+                time.sleep(pause)
+            telegram._last_send = time.monotonic()
+
+        req = urllib.request.Request(
+            'https://api.telegram.org/bot' + token + '/' + method,
+            data=json.dumps(payload).encode(),
+            headers={'Content-Type': 'application/json'}
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=30) as response:
+                result = json.load(response)
+
+        except urllib.error.HTTPError as e:
+            if e.code != 429:
+                raise RuntimeError(
+                    'Telegram HTTP ' + str(e.code)
+                ) from None
+
+            try:
+                details = json.loads(e.read().decode())
+                wait = int(
+                    details.get('parameters', {}).get(
+                        'retry_after', 10 * (2 ** attempt)
+                    )
+                )
+            except Exception:
+                wait = 10 * (2 ** attempt)
+
+            wait = max(1, wait) + 1
+
+            if attempt == 3 or total_wait + wait > 180:
+                raise RuntimeError(
+                    'Telegram 429: riprovare tra almeno '
+                    + str(wait) + ' secondi'
+                ) from None
+
+            print(
+                'Telegram 429: attesa di',
+                wait,
+                'secondi; tentativo',
+                attempt + 1
+            )
+            time.sleep(wait)
+            total_wait += wait
+            continue
+
+        except Exception:
+            raise RuntimeError(
+                'Connessione Telegram fallita; '
+                'verificare prima di riprovare'
+            ) from None
+
+        if not result.get('ok'):
+            raise RuntimeError('Telegram ha rifiutato la richiesta')
 
 def category(title, description, url):
     text = (title + ' ' + description).lower()
