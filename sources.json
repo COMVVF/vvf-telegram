@@ -1,0 +1,36 @@
+[
+  {
+    "kind": "rss",
+    "url": "https://www.vigilfuoco.it/news/rss.xml"
+  },
+  {
+    "kind": "page",
+    "url": "https://www.vigilfuoco.it/servizi-le-aziende-e-i-professionisti/prevenzione-incendi",
+    "prefix": "/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/",
+    "category": "Normativa e prevenzione incendi"
+  },
+  {
+    "kind": "page",
+    "url": "https://www.vigilfuoco.it/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/quesiti-di-prevenzione-incendi",
+    "prefix": "/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/",
+    "category": "Normativa e prevenzione incendi"
+  },
+  {
+    "kind": "page",
+    "url": "https://www.vigilfuoco.it/servizi-ai-cittadini/concorsi-pubblici",
+    "prefix": "/servizi-ai-cittadini/concorsi-pubblici/",
+    "category": "Concorsi e mobilità"
+  },
+  {
+    "kind": "page",
+    "url": "https://www.vigilfuoco.it/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/norme-di-prevenzione-incendi",
+    "prefix": "/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/",
+    "category": "Normativa e prevenzione incendi"
+  },
+  {
+    "kind": "page",
+    "url": "https://www.vigilfuoco.it/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/testi-coordinati-di-prevenzione",
+    "prefix": "/servizi-le-aziende-e-i-professionisti/prevenzione-incendi/",
+    "category": "Normativa e prevenzione incendi"
+  }
+]
